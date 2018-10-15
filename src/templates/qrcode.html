@@ -1,0 +1,35 @@
+{{ define "title" }} QR Code {{ end }}
+
+{{ define "container" }}
+    <script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery/qrcode.js"></script>
+    <div class="row row-page" style="padding-top: 100px;">
+        <div class="col-lg-12 col-page">
+            <div id="qrcode" style="width:250px; height:250px; margin-top:15px;"></div>
+
+        </div>
+    </div>
+    <script>
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width : 250,
+            height : 250
+        });
+
+        function makeCode () {		
+            var elText = "{{ .Text }}";
+            qrcode.makeCode(elText);
+        }
+
+        makeCode();
+
+        $("#text").
+            on("blur", function () {
+                makeCode();
+            }).
+            on("keydown", function (e) {
+                if (e.keyCode == 13) {
+                    makeCode();
+                }
+            });
+    </script>
+{{ end }}

@@ -33,45 +33,32 @@ func sendMessage(wac *whatsapp.Conn, number string, msg string) {
 }
 
 // http.Redirect(w, r, "/home/", http.StatusFound)
-
-func handleInitPage(w http.ResponseWriter, r *http.Request) {
-	t := template.Must(template.ParseFiles("./src/templates/base.html", "./src/templates/home.html"))
-	data := Data{Text: qrString}
-	t.ExecuteTemplate(w, "base", data)
-}
-
 func handleHomePage(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.ParseFiles("./src/templates/base.html", "./src/templates/home.html"))
+	t.ExecuteTemplate(w, "base", nil)
+}
+
+func handleQrCodePage(w http.ResponseWriter, r *http.Request) {
+	t := template.Must(template.ParseFiles("./src/templates/base.html", "./src/templates/qrcode.html"))
 	data := Data{Text: qrString}
 	t.ExecuteTemplate(w, "base", data)
 }
 
 func main() {
-
-	cssFolder := http.FileServer(http.Dir("src/css"))
-	http.Handle("/css/", http.StripPrefix("/css/", cssFolder))
-
-	imgFolder := http.FileServer(http.Dir("src/img"))
-	http.Handle("/img/", http.StripPrefix("/img/", imgFolder))
-
-	jsFolder := http.FileServer(http.Dir("src/js"))
-	http.Handle("/js/", http.StripPrefix("/js/", jsFolder))
-
-	scssFolder := http.FileServer(http.Dir("src/scss"))
-	http.Handle("/scss/", http.StripPrefix("/scss/", scssFolder))
-
 	vendorFolder := http.FileServer(http.Dir("src/vendor"))
 	http.Handle("/vendor/", http.StripPrefix("/vendor/", vendorFolder))
 
 	fmt.Printf("Escuchando...")
-	http.HandleFunc("/init", handleInitPage)
+	// http.HandleFunc("/", handleHomePage)
 	http.HandleFunc("/home", handleHomePage)
+	http.HandleFunc("/qrcode", handleQrCodePage)
 	// go connWhatsapp()
 	http.ListenAndServe(":8080", nil)
 }
 
 //--------------------------------------------------
-//
+//--------------------------------------------------
+//--------------------------------------------------
 
 func connWhatsapp() {
 	wac, err := whatsapp.NewConn(60 * time.Second)
@@ -84,7 +71,7 @@ func connWhatsapp() {
 		qrString = <-qrChan
 		fmt.Printf("qrString: %s\n\n", qrString)
 		// err := exec.Command("rundll32", "url.dll,FileProtocolHandler", "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+qrString).Start()
-		err := exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:8080/init").Start()
+		err := exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:8080/qrcode").Start()
 		if err != nil {
 			log.Fatalf("Error al abrir el navegador.\n")
 		}

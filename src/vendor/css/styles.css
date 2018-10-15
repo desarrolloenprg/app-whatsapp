@@ -1,0 +1,9 @@
+.row-page {
+    text-align: center;
+    padding-top: 30px;
+}
+
+#qrcode {
+    margin-top: 10px;
+    margin: auto !important;
+}
