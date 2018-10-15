@@ -1,9 +1,79 @@
 {{ define "title" }} Home {{ end }}
 
 {{ define "container" }}
-    <div class="row">
-        <div class="col-lg-12">
-            
+    <script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <div class="row row-page" style="padding-top:80px;">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8 send-box">
+            <form id="send-form" action="/sendata" method="POST" >
+                <div class="form-group">
+                    <label for="send-type">Seleccione el tipo de envio.</label>
+                    <select class="form-control" id="send-type" name="send-type">
+                        <option value="0" id="type-0">Individual</option>
+                        <option value="1" id="type-1">Representantes</option>
+                        <option value="2" id="type-2">Docentes</option>
+                    </select>
+                    <input type="text" id="send-hidden-type" value="0" hidden>
+                </div>
+
+                <div id="send-phone-box" class="form-group">
+                    <label for="send-phone">Ingrese el numero teléfonico.</label>
+                    <input type="text" class="form-control" id="send-phone" name="send-phone" onkeypress="return valida(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="send-msg">Escriba el mensaje a enviar.</label>
+                    <textarea class="form-control" id="send-msg" name="send-msg" rows="3"></textarea>
+                </div>
+                <div class="send-btn-submit form-group">
+                    <button type="button" id="send-btn" class="btn-submit btn btn-primary">Enviar</button>
+                </div>
+            </form>
         </div>
+        <div class="col-lg-2"></div>
     </div>
+    <script>
+        var err = "{{ .Error }}";
+        if (err.length > 0 ) {
+            alert(err);
+        } 
+
+        $('#send-type').change(function() {
+            if($(this).val() != -1)
+            {   
+                $('#send-hidden-type').val($(this).val());
+                // console.debug(($('#send-hidden-type').val()));
+
+                if ($(this).val() != 0) {
+                    document.getElementById("send-phone-box").style.display = "none";
+                } else {
+                    document.getElementById("send-phone-box").style.display = "block";
+                }
+            } 
+        });
+
+        $('#send-btn').click(function() {
+            if ($('#send-hidden-type').val() == 0 && $('#send-phone').val() == "") {
+                alert("El campo teléfono está vacío.")
+            } else if ($('#send-msg').val() == "") {
+                alert("El campo mensaje esta vacio.")
+            } else {
+                $('#send-form').submit();
+            }
+        });
+
+        function valida(e){
+            tecla = (document.all) ? e.keyCode : e.which;
+
+            //Tecla de retroceso para borrar, siempre la permite
+            if (tecla==8){
+                return true;
+            }
+                
+            // Patron de entrada, en este caso solo acepta numeros
+            patron =/[0-9]/;
+            tecla_final = String.fromCharCode(tecla);
+            return patron.test(tecla_final);
+        }
+    </script>
 {{ end }}

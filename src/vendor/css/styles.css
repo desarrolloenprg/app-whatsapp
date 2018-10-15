@@ -1,3 +1,11 @@
+body {
+    background-image: url("/img/fondo.jpg") ;
+    background-size: 35em;
+}
+.img-logo-name {
+    max-height: 30px;
+}
+
 .row-page {
     text-align: center;
     padding-top: 30px;
@@ -6,4 +14,23 @@
 #qrcode {
     margin-top: 10px;
     margin: auto !important;
+}
+
+#send-form {
+    text-align: left;
+    padding: 10px;
+}
+
+.send-btn-submit {
+    text-align: right !important;
+}
+
+#send-msg {
+    height: 250px;
+}
+
+.send-box {
+    /* background-color: rgba(250, 125, 53, 0.2); */
+    padding: 15px;
+    border-radius: 20px;
 }
