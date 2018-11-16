@@ -17,10 +17,21 @@
                 </div>
 
                 <div id="send-phone-box" class="form-group">
-                    <label for="send-phone">Ingrese el numero teléfonico.</label>
+                    <label for="send-phone">Ingrese el número teléfonico.</label>
                     <input type="text" class="form-control" id="send-phone" name="send-phone" onkeypress="return valida(event)">
                 </div>
+                
+                <div id="send-data-box" class="form-group">
+                    <label for="send-id-sheet">Ingrese el id de GoogleSheet.</label>
+                    <input type="text" class="form-control" id="send-id-sheet" name="send-id-sheet">
 
+                    <label for="send-curso-sheet">Ingrese el curso.</label>
+                    <input type="text" class="form-control" id="send-curso-sheet" name="send-curso-sheet">
+
+                    <label for="send-seccion-sheet">Ingrese la sección.</label>
+                    <input type="text" class="form-control" id="send-seccion-sheet" name="send-seccion-sheet">
+                </div>
+                
                 <div class="form-group">
                     <label for="send-msg">Escriba el mensaje a enviar.</label>
                     <textarea class="form-control" id="send-msg" name="send-msg" rows="3"></textarea>
@@ -42,12 +53,12 @@
             if($(this).val() != -1)
             {   
                 $('#send-hidden-type').val($(this).val());
-                // console.debug(($('#send-hidden-type').val()));
-
                 if ($(this).val() != 0) {
                     document.getElementById("send-phone-box").style.display = "none";
+                    document.getElementById("send-data-box").style.display = "block";
                 } else {
                     document.getElementById("send-phone-box").style.display = "block";
+                    document.getElementById("send-data-box").style.display = "none";
                 }
             } 
         });

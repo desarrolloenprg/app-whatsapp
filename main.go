@@ -1,3 +1,57 @@
+// package main
+
+// import (
+// 	"fmt"
+// 	"io/ioutil"
+// 	"log"
+
+// 	"github.com/kenshindeveloper/app-whatsapp/src/libs"
+
+// 	"golang.org/x/oauth2/google"
+// 	"google.golang.org/api/sheets/v4"
+// )
+
+// func main() {
+// 	b, err := ioutil.ReadFile("credentials.json")
+// 	if err != nil {
+// 		log.Fatalf("Unable to read client secret file: %v", err)
+// 	}
+
+// 	// If modifying these scopes, delete your previously saved token.json.
+// 	config, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets.readonly")
+// 	if err != nil {
+// 		log.Fatalf("Unable to parse client secret file to config: %v", err)
+// 	}
+// 	client := libs.GetClient(config)
+// 	srv, err := sheets.New(client)
+// 	if err != nil {
+// 		log.Fatalf("Unable to retrieve Sheets client: %v", err)
+// 	}
+
+// 	// Prints the names and majors of students in a sample spreadsheet:
+// 	// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+// 	// spreadsheetId := "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+// 	spreadsheetId := "1Znpq-5v4DegW_dVfvKdLZPYp8Zt7KJrJ2ToA7uzb5xM"
+// 	readRange := "curso!A1:F8"
+// 	resp, err := srv.Spreadsheets.Values.Get(spreadsheetId, readRange).Do()
+// 	if err != nil {
+// 		log.Fatalf("Unable to retrieve data from sheet: %v", err)
+// 	}
+
+// 	if len(resp.Values) == 0 {
+// 		fmt.Println("No data found.")
+// 	} else {
+// 		fmt.Println("Name, Major:")
+// 		for _, row := range resp.Values {
+// 			// Print columns A and E, which correspond to indices 0 and 4.
+// 			// fmt.Printf("%s, %s\n", row[0], row[4])
+// 			if len(row) > 0 {
+// 				fmt.Printf("%s \n", row[0])
+// 			}
+// 		}
+// 	}
+// }
+
 package main
 
 import (
@@ -107,7 +161,7 @@ func sendMessage(wac *whatsapp.Conn, number string, msg string) {
 }
 
 func connWhatsapp() {
-	wac, err := whatsapp.NewConn(60 * time.Second)
+	wac, err := whatsapp.NewConn(120 * time.Second)
 	if err != nil {
 		log.Fatalf("Error al establecer la conexion...")
 	}
