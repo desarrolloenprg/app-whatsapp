@@ -1,68 +1,18 @@
-// package main
-
-// import (
-// 	"fmt"
-// 	"io/ioutil"
-// 	"log"
-
-// 	"github.com/kenshindeveloper/app-whatsapp/src/libs"
-
-// 	"golang.org/x/oauth2/google"
-// 	"google.golang.org/api/sheets/v4"
-// )
-
-// func main() {
-// 	b, err := ioutil.ReadFile("credentials.json")
-// 	if err != nil {
-// 		log.Fatalf("Unable to read client secret file: %v", err)
-// 	}
-
-// 	// If modifying these scopes, delete your previously saved token.json.
-// 	config, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets.readonly")
-// 	if err != nil {
-// 		log.Fatalf("Unable to parse client secret file to config: %v", err)
-// 	}
-// 	client := libs.GetClient(config)
-// 	srv, err := sheets.New(client)
-// 	if err != nil {
-// 		log.Fatalf("Unable to retrieve Sheets client: %v", err)
-// 	}
-
-// 	// Prints the names and majors of students in a sample spreadsheet:
-// 	// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-// 	// spreadsheetId := "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
-// 	spreadsheetId := "1Znpq-5v4DegW_dVfvKdLZPYp8Zt7KJrJ2ToA7uzb5xM"
-// 	readRange := "curso!A1:F8"
-// 	resp, err := srv.Spreadsheets.Values.Get(spreadsheetId, readRange).Do()
-// 	if err != nil {
-// 		log.Fatalf("Unable to retrieve data from sheet: %v", err)
-// 	}
-
-// 	if len(resp.Values) == 0 {
-// 		fmt.Println("No data found.")
-// 	} else {
-// 		fmt.Println("Name, Major:")
-// 		for _, row := range resp.Values {
-// 			// Print columns A and E, which correspond to indices 0 and 4.
-// 			// fmt.Printf("%s, %s\n", row[0], row[4])
-// 			if len(row) > 0 {
-// 				fmt.Printf("%s \n", row[0])
-// 			}
-// 		}
-// 	}
-// }
-
 package main
 
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os/exec"
 	"time"
 
+	"github.com/kenshindeveloper/app-whatsapp/src/libs"
 	whatsapp "github.com/rhymen/go-whatsapp"
+	"golang.org/x/oauth2/google"
+	sheets "google.golang.org/api/sheets/v4"
 )
 
 type Data struct {
@@ -103,20 +53,71 @@ func handleQrCodePage(w http.ResponseWriter, r *http.Request) {
 	t.ExecuteTemplate(w, "base", data)
 }
 
+func sendMsgIndividual(dataPhone, dataMsg string) {
+	if flagConn {
+		sendMessage(wacConn, dataPhone, dataMsg)
+	} else if !flagConn {
+		connErr = 1
+	}
+}
+
+func sendMsgGroup(dataIDSheet, dataSeccion, dataMsg string) {
+	b, err := ioutil.ReadFile("credentials.json")
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v", err)
+	}
+
+	config, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets.readonly")
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
+	}
+	client := libs.GetClient(config)
+	srv, err := sheets.New(client)
+	if err != nil {
+		log.Fatalf("Unable to retrieve Sheets client: %v", err)
+	}
+
+	readRange := dataSeccion + "!A1:F8"
+	resp, err := srv.Spreadsheets.Values.Get(dataIDSheet, readRange).Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve data from sheet: %v", err)
+	}
+
+	if len(resp.Values) == 0 {
+		fmt.Println("No data found.")
+	} else {
+		fmt.Println("Name, Major:")
+		for _, row := range resp.Values {
+			// Print columns A and E, which correspond to indices 0 and 4.
+			// fmt.Printf("%s, %s\n", row[0], row[4])
+			if len(row) > 0 {
+				m := "Hola " + fmt.Sprintf("%s, ", row[0]) + dataMsg
+				sendMessage(wacConn, fmt.Sprintf("%s", row[1]), m)
+				fmt.Printf("%s %s\n", row[0], row[1])
+			}
+		}
+	}
+}
+
 func handleSendData(w http.ResponseWriter, r *http.Request) {
 	dataType := r.FormValue("send-type")
 	dataPhone := r.FormValue("send-phone")
+	dataIDSheet := r.FormValue("send-id")
+	dataSeccion := r.FormValue("send-seccion")
 	dataMsg := r.FormValue("send-msg")
 
 	fmt.Printf("type: %s\n", dataType)
 	fmt.Printf("phone: %s\n", dataPhone)
 	fmt.Printf("msg: %s\n", dataMsg)
 
-	if flagConn && dataType == "0" {
-		sendMessage(wacConn, dataPhone, dataMsg)
-	} else if !flagConn {
-		connErr = 1
-	} else if dataType != "0" {
+	switch dataType {
+	case "0":
+		sendMsgIndividual(dataPhone, dataMsg)
+
+	case "1":
+		sendMsgGroup(dataIDSheet, dataSeccion, dataMsg)
+
+	default:
 		connErr = 2
 	}
 
@@ -150,25 +151,17 @@ func sendMessage(wac *whatsapp.Conn, number string, msg string) {
 		},
 		Text: msg,
 	}
-	err := wac.Send(text)
-	if err != nil {
-		connErr = 11
-		fmt.Printf("error al enviar el msg a '%s'.\n", number)
-	} else {
-		connErr = 10
-		fmt.Printf("mensaje enviado a '%s'.\n", number)
-	}
+	wac.Send(text)
 }
 
 func connWhatsapp() {
-	wac, err := whatsapp.NewConn(120 * time.Second)
+	wac, err := whatsapp.NewConn(5 * time.Second)
 	if err != nil {
 		log.Fatalf("Error al establecer la conexion...")
 	}
 	qrChan := make(chan string)
 	go func() {
 		qrString = <-qrChan
-		// fmt.Printf("qrString: %s\n\n", qrString)
 		fmt.Printf("abriendo pestaña...\n")
 		err := exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:8080/qrcode").Start()
 		if err != nil {
@@ -178,8 +171,10 @@ func connWhatsapp() {
 
 	sess, err := wac.Login(qrChan)
 	if err != nil {
+		http.RedirectHandler("/home", http.StatusFound)
 		log.Fatalf("Error al autentificarse...")
 	}
+
 	fmt.Printf("abriendo pestaña...\n")
 	err = exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:8080/home").Start()
 	if err != nil {
@@ -188,7 +183,4 @@ func connWhatsapp() {
 	fmt.Printf("id: %s\n", sess.ClientId)
 	flagConn = true
 	wacConn = wac
-	// sendMessage(wac, "584122106942", "prueba de software para envio masivo por whatsapp") //mio
-	// sendMessage(wac, "584241951497", "prueba de software para envio masivo por whatsapp") //benjamin
-	// fmt.Printf("\nTodos los mensajes han sidos enviados.\n")
 }

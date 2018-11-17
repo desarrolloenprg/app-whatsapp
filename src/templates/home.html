@@ -10,8 +10,7 @@
                     <label for="send-type">Seleccione el tipo de envio.</label>
                     <select class="form-control" id="send-type" name="send-type">
                         <option value="0" id="type-0">Individual</option>
-                        <option value="1" id="type-1">Representantes</option>
-                        <option value="2" id="type-2">Docentes</option>
+                        <option value="1" id="type-1">Grupal</option>
                     </select>
                     <input type="text" id="send-hidden-type" value="0" hidden>
                 </div>
@@ -21,15 +20,12 @@
                     <input type="text" class="form-control" id="send-phone" name="send-phone" onkeypress="return valida(event)">
                 </div>
                 
-                <div id="send-data-box" class="form-group">
-                    <label for="send-id-sheet">Ingrese el id de GoogleSheet.</label>
-                    <input type="text" class="form-control" id="send-id-sheet" name="send-id-sheet">
+                <div id="send-data-box" class="form-group" style="display:none;">
+                    <label for="send-id">Ingrese el id de GoogleSheet.</label>
+                    <input type="text" class="form-control" id="send-id" name="send-id">
 
-                    <label for="send-curso-sheet">Ingrese el curso.</label>
-                    <input type="text" class="form-control" id="send-curso-sheet" name="send-curso-sheet">
-
-                    <label for="send-seccion-sheet">Ingrese la sección.</label>
-                    <input type="text" class="form-control" id="send-seccion-sheet" name="send-seccion-sheet">
+                    <label for="send-seccion">Ingrese la sección.</label>
+                    <input type="text" class="form-control" id="send-seccion" name="send-seccion">
                 </div>
                 
                 <div class="form-group">
@@ -75,12 +71,8 @@
 
         function valida(e){
             tecla = (document.all) ? e.keyCode : e.which;
-
             //Tecla de retroceso para borrar, siempre la permite
-            if (tecla==8){
-                return true;
-            }
-                
+            if (tecla==8) { return true;}
             // Patron de entrada, en este caso solo acepta numeros
             patron =/[0-9]/;
             tecla_final = String.fromCharCode(tecla);
