@@ -20,6 +20,8 @@ type Data struct {
 	Error string
 }
 
+const PORT = "8080"
+
 var qrString = ""
 var flagConn = false
 var connErr = 0
@@ -88,8 +90,6 @@ func sendMsgGroup(dataIDSheet, dataSeccion, dataMsg string) {
 	} else {
 		fmt.Println("Name, Major:")
 		for _, row := range resp.Values {
-			// Print columns A and E, which correspond to indices 0 and 4.
-			// fmt.Printf("%s, %s\n", row[0], row[4])
 			if len(row) > 0 {
 				m := "Hola " + fmt.Sprintf("%s, ", row[0]) + dataMsg
 				sendMessage(wacConn, fmt.Sprintf("%s", row[1]), m)
@@ -155,7 +155,7 @@ func sendMessage(wac *whatsapp.Conn, number string, msg string) {
 }
 
 func connWhatsapp() {
-	wac, err := whatsapp.NewConn(5 * time.Second)
+	wac, err := whatsapp.NewConn(60 * time.Second)
 	if err != nil {
 		log.Fatalf("Error al establecer la conexion...")
 	}
@@ -163,7 +163,7 @@ func connWhatsapp() {
 	go func() {
 		qrString = <-qrChan
 		fmt.Printf("abriendo pestaña...\n")
-		err := exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:8080/qrcode").Start()
+		err := exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:"+PORT+"/qrcode").Start()
 		if err != nil {
 			log.Fatalf("Error al abrir el navegador.\n")
 		}
@@ -171,12 +171,11 @@ func connWhatsapp() {
 
 	sess, err := wac.Login(qrChan)
 	if err != nil {
-		http.RedirectHandler("/home", http.StatusFound)
 		log.Fatalf("Error al autentificarse...")
 	}
 
 	fmt.Printf("abriendo pestaña...\n")
-	err = exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:8080/home").Start()
+	err = exec.Command("rundll32", "url.dll,FileProtocolHandler", "http://127.0.0.1:"+PORT+"/home").Start()
 	if err != nil {
 		log.Fatalf("Error al abrir el navegador.\n")
 	}
