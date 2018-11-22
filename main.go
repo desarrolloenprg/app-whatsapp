@@ -91,7 +91,7 @@ func sendMsgGroup(dataIDSheet, dataSeccion, dataMsg string) {
 		fmt.Println("Name, Major:")
 		for _, row := range resp.Values {
 			if len(row) > 0 {
-				m := "Hola " + fmt.Sprintf("%s, ", row[0]) + dataMsg
+				m := "Hola " + fmt.Sprintf("%s, ", row[0]) + dataMsg + ", link:"+fmt.Sprintf("%s", row[2])
 				sendMessage(wacConn, fmt.Sprintf("%s", row[1]), m)
 				fmt.Printf("%s %s\n", row[0], row[1])
 			}
