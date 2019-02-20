@@ -65,3 +65,15 @@ El fichero *credentials.json* permite a la aplicación poder acceder a los docum
 ![img1](src/img/readme-img1.png)
 
 Oprimimos el botón **ENABLE THE GOOGLE SHEETS API** y seleccionamos **My Project**, y se procederá a descargar el archivo credentials. 
+
+## DESPLIEGUE DE LA APLICACIÓN
+
+Para iniciar el aplicativo, es necesario situarse en la carpeta del proyecto por medio de cmd con el comando cd, la ruta por defecto es C:\Users\[user]\go\src\github.com\kenshindeveloper\app-whatsapp.
+
+Una vez ubicados en esta carpeta, se procede a ejecutar el comando
+
+```
+go run main.go
+```
+
+Y con esto lograremos que se despigue la aplicación con normalidad en el navegador.
