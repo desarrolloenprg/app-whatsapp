@@ -41,6 +41,7 @@ Este es el link de github del proyecto [go-whatsapp](https://github.com/Rhymen/g
 ---
 
 Seguido procedemos a instalar los paquetes que nos permitiran utilizar la API de **GoogleSheet**.
+Siguiendo esto: https://developers.google.com/sheets/api/quickstart/go
 
 ```
 go get -u google.golang.org/api/sheets/v4
