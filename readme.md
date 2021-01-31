@@ -32,6 +32,10 @@ Una vez instalado y configurado el lenguaje de programación *Go*, procederemos 
 
 **Es importante resaltar que para utilizar el comando *go get* se debe tener instalado y configurado la herramienta git.**
 
+The GOPATH environment variable is used by the Go tools. It must be set in order to be able to get, build and install packages, and it specifies the location of your workspace. It is likely the only environment variable you'll need to set when developing Go code.
+Again, the GOPATH should not point to the Go installation, but rather to your workspace.
+For example, on Windows, if you decide that your workspace is at c:\gowork\, you will need to set GOPATH value as c:\gowork
+
 Este es el link de github del proyecto [go-whatsapp](https://github.com/Rhymen/go-whatsapp)
 
 ---
