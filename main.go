@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/kenshindeveloper/app-whatsapp/src/libs"
-	whatsapp "github.com/rhymen/go-whatsapp"
+	whatsapp "github.com/Rhymen/go-whatsapp"
 	"golang.org/x/oauth2/google"
 	sheets "google.golang.org/api/sheets/v4"
 )
